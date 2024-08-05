@@ -29,14 +29,14 @@ def stats() -> str:
 @app_views.route('/unauthorized', methods=['GET'], strict_slashes=False)
 def unauthorized() -> str:
     """
-    Unauthorized
+    Unauthorized handler
     """
     abort(401)
 
 
 @app_views.route('/forbidden', methods=['GET'], strict_slashes=False)
-def unauthorized() -> str:
+def forbidden() -> str:
     """
-    Unauthorized
+    forbidden handler
     """
     abort(403)
