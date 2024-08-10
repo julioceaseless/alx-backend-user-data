@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Basic authentication"""
-from api.v1.auth.auth import Auth
+import re
 import base64
+from api.v1.auth.auth import Auth
 from models.user import User
 from typing import TypeVar
 
@@ -38,12 +39,26 @@ class BasicAuth(Auth):
     def extract_user_credentials(self,
                                  decoded_base64_auth_hdr: str) -> (str, str):
         """extract basic user credentials"""
+        """
         if decoded_base64_auth_hdr is None or\
            not isinstance(decoded_base64_auth_hdr, str) or\
            decoded_base64_auth_hdr.find(':') == -1:
             return (None, None)
+        print('----',decoded_base64_auth_hdr)
         email, password = decoded_base64_auth_hdr.split(':')
         return (email, password)
+        """
+        if type(decoded_base64_auth_hdr) == str:
+            pattern = r'(?P<user>[^:]+):(?P<password>.+)'
+            field_match = re.fullmatch(
+                pattern,
+                decoded_base64_auth_hdr.strip(),
+            )
+            if field_match is not None:
+                user = field_match.group('user')
+                password = field_match.group('password')
+                return user, password
+        return None, None
 
     def user_object_from_credentials(self,
                                      user_email: str,
