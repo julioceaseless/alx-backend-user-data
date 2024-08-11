@@ -17,31 +17,37 @@ CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 auth = None
 auth = os.getenv('AUTH_TYPE')
 
-# initialize auth with the appropriate object
+# initialize auth with appropriate type of authentication object
 if auth == 'basic_auth':
     from api.v1.auth.basic_auth import BasicAuth
     auth = BasicAuth()
+elif auth == "session_auth":
+    from api.v1.auth.session_auth import SessionAuth
+    auth = SessionAuth
 else:
     from api.v1.auth import auth
     auth = auth.Auth()
 
 
 @app.before_request
-def run_before_request():
+def authenticate_user():
     """handler for before request"""
     if auth:
-        paths = [
+        excluded_paths = [
             '/api/v1/status/',
             '/api/v1/unauthorized/',
-            '/api/v1/forbidden/'
+            '/api/v1/forbidden/',
+            '/api/v1/auth_session/login/'
             ]
-        if not auth.require_auth(request.path, paths):
-            return
-        if auth.authorization_header(request) is None:
-            abort(401)
-        if auth.current_user(request) is None:
-            abort(403)
-        request.current_user = auth.current_user(request)
+        if auth.require_auth(request.path, excluded_paths):
+            if auth.authorization_header(request) is None:
+                abort(401)
+            if auth.current_user(request) is None:
+                abort(403)
+            if auth.authorization_header(request) and\
+               auth.session_cookie(request):
+                abort(401)
+            request.current_user = auth.current_user(request)
 
 
 @app.errorhandler(404)
