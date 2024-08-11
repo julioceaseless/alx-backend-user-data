@@ -25,9 +25,12 @@ class Auth:
         return True
 
     def authorization_header(self, request=None) -> str:
-        """authorization header"""
-        # retrieve the 'Authrization' key in headers
-        # Return none if reqest is none or doesnt contain header key
+        """
+        Retrieves the authorization header
+        Return:
+            None request is None or if header does not
+            have Authorization key
+        """
         if request:
             return request.headers.get('Authorization')
         return None
@@ -37,7 +40,10 @@ class Auth:
         return None
 
     def session_cookie(self, request=None) -> str:
-        """Gets the value of the cookie named SESSION_NAME.
+        """
+        Gets the value of the cookie named SESSION_NAME.
+        Return:
+            cookie or None if no cookie
         """
         if request is not None:
             cookie_name = os.getenv('SESSION_NAME')
