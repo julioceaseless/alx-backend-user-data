@@ -16,7 +16,7 @@ def csv_processor(filename):
 
 
 # get headers from
-PII_FIELDS = csv_processor("user_data.csv")
+PII_FIELDS = tuple(csv_processor("user_data.csv"))
 
 
 def get_logger() -> logging.Logger:
@@ -24,14 +24,14 @@ def get_logger() -> logging.Logger:
     Returns a configured logger named "user_data" for logging user data.
     """
     # create a logger object
-    user_data = logging.Logger(__name__)
-    user_data.level = logging.INFO
-    user_data.propagate = False
+    logger = logging.getLogger("user_data")
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
 
     StreamHandler = logging.StreamHandler()
     StreamHandler.setFormatter(RedactingFormatter(PII_FIELDS))
 
-    user_data.addHandler(StreamHandler)
+    logger.addHandler(StreamHandler)
 
     return user_data
 
