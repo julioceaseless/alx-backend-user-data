@@ -21,13 +21,14 @@ def csv_processor(filename):
 PII_FIELDS = tuple(csv_processor("user_data.csv"))
 
 
-def get_db():
+def get_db() -> mysql.connector.connection.MySQLConnection:
     """Connects to secure database and read users table"""
     user = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
     password = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
     host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
     database = os.getenv("PERSONAL_DATA_DB_NAME")
 
+    # create a database connection object
     conn = mysql.connector.connect(
         host=host,
         user=user,
