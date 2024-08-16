@@ -24,9 +24,9 @@ PII_FIELDS = tuple(csv_processor("user_data.csv"))
 def get_db() -> mysql.connector.connection.MySQLConnection:
     """
     Connects to secure database and read users table
-    
+
     Returns:
-        - mysql.connector.connection.MySQLConnection: 
+        - mysql.connector.connection.MySQLConnection:
         Connection object to the MySQL database
     """
     user = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
