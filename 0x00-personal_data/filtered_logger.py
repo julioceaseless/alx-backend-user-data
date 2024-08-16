@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Uses regex to obfuscate a message"""
-import re
 import csv
-from typing import List
 import logging
+import os
+import re
+from typing import List
+import mysql.connector
 
 
 def csv_processor(filename):
@@ -17,6 +19,40 @@ def csv_processor(filename):
 
 # get headers from
 PII_FIELDS = tuple(csv_processor("user_data.csv"))
+
+
+def get_db():
+    """Connects to secure database and read users table"""
+    user = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
+    password = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
+    host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
+    database = os.getenv("PERSONAL_DATA_DB_NAME")
+
+    conn = mysql.connector.connect(
+        host=host,
+        user=user,
+        password=password,
+        database=database
+        )
+    return conn
+    """
+    # Create a cursor object to interact with the database
+    cursor = conn.cursor()
+
+    # Execute a query
+    cursor.execute("SELECT * FROM users")
+
+    # Fetch the results
+    results = cursor.fetchall()
+
+    # Process the results
+    for row in results:
+        print(row)
+
+    # Close the cursor and connection
+    cursor.close()
+    conn.close()
+    """
 
 
 def get_logger() -> logging.Logger:
@@ -33,7 +69,7 @@ def get_logger() -> logging.Logger:
 
     logger.addHandler(StreamHandler)
 
-    return user_data
+    return logger
 
 
 def filter_datum(fields: List[str], redaction: str, message: str,

@@ -22,7 +22,7 @@ def process_csv(filename):
 def get_logger() -> logging.Logger:
   """
   Returns a configured logger named "user_data" for logging user data.
-  """
+  """logging.Logger
   user_data = logging.Logger(__name__, level=logging.INFO)
   
   # Don't propagate messages to parent loggers
