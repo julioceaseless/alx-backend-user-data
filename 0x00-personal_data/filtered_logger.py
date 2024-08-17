@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Uses regex to obfuscate a message"""
+import bcrypt
 import csv
 import logging
 import os
 import re
-from typing import List
+from typing import List, ByteString
 import mysql.connector
 
 
@@ -14,12 +15,13 @@ def csv_processor(filename):
     with open(filename, 'r', encoding="utf-8") as file:
         line = csv.reader(file)
         headers = next(line)
-    return headers[:5]
+    return headers
 
 
-# get headers from
-# PII_FIELDS = [tuple(csv_processor("user_data.csv"))]
-PII_FIELDS = ["name", "email", "phone", "ssn", "password"]
+# get headers from csv
+headers = csv_processor("user_data.csv")
+PII_FIELDS = headers[:5]
+# PII_FIELDS = ["name", "email", "phone", "ssn", "password"]
 
 
 def get_db() -> mysql.connector.connection.MySQLConnection:
