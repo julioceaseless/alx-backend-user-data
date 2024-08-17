@@ -18,7 +18,8 @@ def csv_processor(filename):
 
 
 # get headers from
-PII_FIELDS = tuple(csv_processor("user_data.csv"))
+# PII_FIELDS = [tuple(csv_processor("user_data.csv"))]
+PII_FIELDS = ["name", "email", "phone", "ssn", "password"]
 
 
 def get_db() -> mysql.connector.connection.MySQLConnection:
@@ -42,24 +43,6 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
         database=database
         )
     return conn
-    """
-    # Create a cursor object to interact with the database
-    cursor = conn.cursor()
-
-    # Execute a query
-    cursor.execute("SELECT * FROM users")
-
-    # Fetch the results
-    results = cursor.fetchall()
-
-    # Process the results
-    for row in results:
-        print(row)
-
-    # Close the cursor and connection
-    cursor.close()
-    conn.close()
-    """
 
 
 def get_logger() -> logging.Logger:
@@ -104,6 +87,44 @@ class RedactingFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
         """format the string output"""
         record.msg = filter_datum(self.fields, self.REDACTION,
-                                  record.getMessage(), self.SEPARATOR)
+                                  record.msg, self.SEPARATOR)
         # print(super().format(record).replace(record.msg, msg))
         return super().format(record)
+
+
+def main():
+    """Connects to db using get_db and retrieves all rows in users table"""
+    print("runnint main")
+    conn = get_db()
+
+    # Create a cursor object to interact with the database
+    cursor = conn.cursor()
+
+    # Execute a query
+    cursor.execute("SELECT * FROM users")
+
+    # Fetch the results
+    rows = cursor.fetchall()
+
+    # Process the results
+    for row in rows:
+
+        # create a key-value string
+        part1 = f"name={row[0]};email={row[1]};phone={row[2]};"
+        part2 = f"ssn={row[3]};password={row[4]};ip={row[5]};"
+        part3 = f"last_login={row[6]};user_agent={row[7]};"
+        row_str = part1 + part2 + part3
+        # print(row_str)
+        # create a log record
+        log_record = logging.LogRecord("user_data", logging.INFO,
+                                       None, None, row_str, None, None)
+        formatter = RedactingFormatter(PII_FIELDS)
+        print(formatter.format(log_record))
+
+    # Close the cursor and connection
+    cursor.close()
+    conn.close()
+
+
+if __name__ == "__main__":
+    main()
