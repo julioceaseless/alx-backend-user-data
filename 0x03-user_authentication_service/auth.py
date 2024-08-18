@@ -21,8 +21,8 @@ class Auth:
 
     def register_user(self, email: str, password: str) -> User:
         """registers a new user"""
-        user = self._db._session.query(User)\
-            .filter(User.email == email).first()
+        session = self._db._session
+        user = session.query(User).filter(User.email == email).first()
         if user:
             raise ValueError(f"User {email} already exists")
         hash_password = _hash_password(password)
