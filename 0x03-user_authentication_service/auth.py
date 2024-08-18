@@ -5,7 +5,7 @@ from user import User
 import bcrypt
 
 
-def _hash_password(self, password: str) -> bytes:
+def _hash_password(password: str) -> bytes:
     """encrypts password"""
     salt = bcrypt.gensalt()
     hashed_password = bcrypt.hashpw(password.encode("utf-8"), salt)
@@ -21,7 +21,8 @@ class Auth:
 
     def register_user(self, email: str, password: str) -> User:
         """registers a new user"""
-        user = self._session.query(User).filter_by(User.email == email).first()
+        user = self._db._session.query(User)\
+            .filter(User.email == email).first()
         if user:
             raise ValueError(f"User {email} already exists")
         hash_password = _hash_password(password)
