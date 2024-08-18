@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """DB module
 """
+import bcrypt
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -73,3 +74,9 @@ class DB:
             raise NoResultFound
         except InvalidRequestError:
             raise InvalidRequestError
+
+    def _hash_password(self, password: str) -> bytes:
+        """encrypts password"""
+        salt = bcrypt.gensalt()
+        hashed_password = bcrypt.hashpw(password.encode("utf-8"), salt)
+        return hashed_password
