@@ -44,7 +44,7 @@ class DB:
         # return the created user object
         return new_user
 
-    def find_user_by(self, **kwargs: dict):
+    def find_user_by(self, **kwargs: dict) -> User:
         """find and returns the first row of search result"""
         try:
             user = self._session.query(User).filter_by(**kwargs).first()
