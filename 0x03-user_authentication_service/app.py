@@ -19,15 +19,16 @@ def index():
 def users():
     """end-point to register a user"""
     # get form data
-    email = request.form['email']
-    password = request.form['password']
+    email = request.form.get('email')
+    password = request.form.get('password')
 
-    # register user
-    user = AUTH.register_user(email, password)
-    if user is None:
-        return jsonify({"message": "email already registered"})
-    return jsonify({f"email": email, "message": "user created"}), 400
+    try:
+        # register user
+        user = AUTH.register_user(email, password)
+        return jsonify({"email": user.email, "message": "user created"})
+    except ValueError:
+        return jsonify({"message": "email already registered"}), 400
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port="5000")
+    app.run(host="0.0.0.0", port="5000", debug=True)
