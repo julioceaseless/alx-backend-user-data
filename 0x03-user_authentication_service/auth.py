@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Authentication module"""
 from db import DB
+from typing import Union
 from user import User
 import bcrypt
 import uuid
@@ -53,4 +54,23 @@ class Auth:
             session_id = _generate_uuid()
             self._db.update_user(user.id, session_id=session_id)
             return session_id
+        return None
+
+    def get_user_from_session_id(self, session_id: str) -> Union[User, None]:
+        """get users from stored session id"""
+        session = self._db._session
+        user = session.query(User)\
+            .filter(User.session_id == session_id).first()
+        return user
+
+    def destroy_session(self, user_id: int) -> None:
+        """destroy session"""
+        # create session
+        session = self._db._session
+
+        # get user
+        user = session.query(User).filter(User.id == user_id).first()
+        if user:
+            # update session_id attribute with none to destroy it
+            self._db.update_user(user_id, session_id=None)
         return None
