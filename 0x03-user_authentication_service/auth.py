@@ -33,7 +33,8 @@ class Auth:
     def valid_login(self, email: str, password: str) -> bool:
         """validate login details"""
         session = self._db._session
-        user = session.query(User).filter(user.email == email).first()
+        user = session.query(User).filter(User.email == email).first()
         if user:
-            return bcrypt.checkpw(password.encode('utf-8'), user.password)
+            return bcrypt.checkpw(password.encode('utf-8'),
+                                  user.hashed_password)
         return False
