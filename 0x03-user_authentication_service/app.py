@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """Simple flask app"""
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, make_response
 from auth import Auth
 
 
 app = Flask(__name__)
-print(__name__)
 AUTH = Auth()
 
 
@@ -25,10 +24,12 @@ def users():
     try:
         # register user
         user = AUTH.register_user(email, password)
-        return jsonify({"email": user.email, "message": "user created"})
+        return make_response(jsonify({"email": user.email,
+                                      "message": "user created"}))
     except ValueError:
-        return jsonify({"message": "email already registered"}), 400
+        return make_response(jsonify({"message": "email already registered"}),
+                             400)
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port="5000", debug=True)
+    app.run(host="0.0.0.0", port="5000")
