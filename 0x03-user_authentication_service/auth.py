@@ -91,7 +91,7 @@ class Auth:
         return reset_token
 
     def update_password(self, reset_token: str, password: str) -> None:
-        """sets a new password"""
+        """set new password"""
         # create session
         session = self._db._session
 
