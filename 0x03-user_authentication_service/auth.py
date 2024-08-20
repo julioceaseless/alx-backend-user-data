@@ -89,3 +89,20 @@ class Auth:
         # update user's reset token database
         self._db.update_user(user.id, reset_token=reset_token)
         return reset_token
+
+    def update_password(self, reset_token: str, password: str) -> None:
+        """sets a new password"""
+        # create session
+        session = self._db._session
+
+        # find user based on the reset_token
+        user = session.query(User)\
+            .filter(User.reset_token == reset_token).first()
+        if not user:
+            raise ValueError
+        # hash new password
+        hashed_password = _hash_password(password)
+        # update user's password
+        self._db.update_user(user.id, hashed_password=hashed_password)
+        # reset the reset_token field
+        self._db.update_user(user.id, reset_token=None)
