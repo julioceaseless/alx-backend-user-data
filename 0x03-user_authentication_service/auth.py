@@ -74,3 +74,18 @@ class Auth:
             # update session_id attribute with none to destroy it
             self._db.update_user(user_id, session_id=None)
         return None
+
+    def get_reset_password_token(self, email: str) -> str:
+        """generate reset password token"""
+        # begin session
+        session = self._db._session
+        # get user
+        user = session.query(User).filter(User.email == email).first()
+        # raise value error if no user
+        if not user:
+            raise ValueError
+        # generate reset token
+        reset_token = _generate_uuid()
+        # update user's reset token database
+        self._db.update_user(user.id, reset_token=reset_token)
+        return reset_token
